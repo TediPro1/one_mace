@@ -2,9 +2,9 @@ name: Build Fabric Mod (one_mace)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
