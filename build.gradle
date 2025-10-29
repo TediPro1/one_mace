@@ -1,0 +1,119 @@
+plugins {
+    id 'fabric-loom' version '1.6.11'
+    id 'java'
+}
+
+base {
+    archivesName = project.archives_base_name
+}
+
+version = project.mod_version
+group = project.maven_group
+
+loom {
+    accessWidenerPath = file("src/main/resources/singletonmace.accesswidener")
+}
+
+repositories {
+    // Add repositories to retrieve artifacts from.
+    // Maven Central is included by default.
+    // If you use other repositories, add them here.
+    mavenCentral()
+    maven { url "https://maven.fabricmc.net/" }
+}
+
+dependencies {
+    // To change the versions see the gradle.properties file
+    minecraft "com.mojang:minecraft:1.21.5"
+    mappings "net.fabricmc:yarn:1.21.5+build.10"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:0.100.0+1.21.5" // Placeholder, adjust as needed
+
+    // Local dependencies
+    // modImplementation files("libs/your-library.jar")
+
+    // For more examples, see https://docs.fabricmc.net/en/develop/build.html#adding-dependencies
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+java {
+    // This is the Java version that your mod is compiled with.
+    // It should match the Java version that Minecraft 1.21.5 runs on.
+    // Minecraft 1.21.5 typically runs on Java 17.
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    // Optional: Enable toolchain support for consistent builds
+    // toolchain {
+    //     languageVersion = JavaLanguageVersion.of(17)
+    // }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(remapJar)) {
+        // This is a workaround for a bug in Fabric Loom where the remapJar task
+        // might not be properly configured for older Gradle versions or specific setups.
+        // It ensures that the jar is properly remapped.
+        remapJar.finalizedBy('build')
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { task ->
+    task.options.encoding = "UTF-8"
+    task.options.release = 17
+}
+
+jar {
+    from("LICENSE") {
+        rename { "LICENSE_${project.archives_base_name}"}
+    }
+}
+
+// Configure the mod's JAR file to include the mod ID in its name.
+// This is useful for distinguishing between different mod versions.
+// The output JAR will be named like: your-mod-id-1.0.0.jar
+// This is optional, but good practice.
+// You can also configure it in fabric.mod.json.
+// archivesBaseName = "${project.archives_base_name}-${project.mod_id}"
+
+// A workaround to make sure the jar task is always executed after remapJar
+// This ensures that the final JAR is correctly remapped.
+// This might not be necessary for newer Loom versions, but it doesn't hurt.
+// tasks.jar.dependsOn tasks.remapJar
+
+// This is a common task to generate the sources JAR.
+// It's useful for other developers who want to see your mod's source code.
+// It's optional.
+// fabricApi {
+//     generateSourcesJar = true
+// }
+
+// This is a common task to generate the javadoc JAR.
+// It's useful for other developers who want to see your mod's javadoc.
+// It's optional.
+// javadocJar {
+//     from sourceSets.main.allJava
+// }
+
+// This is a common task to publish your mod to Maven.
+// It's optional.
+// publishing {
+//     publications {
+//         mavenJava(MavenPublication) {
+//             artifact jar
+//             artifact sourcesJar
+//             artifact javadocJar
+//         }
+//     }
+//     repositories {
+//         maven {
+//             url = "file:///${rootProject.projectDir}/maven"
+//         }
+//     }
+// }

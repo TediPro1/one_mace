@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "singletonmace",
+  "version": "1.0.0",
+  "name": "Singleton Mace",
+  "description": "Enforces a server-wide limit of one Mace.",
+  "authors": [
+    "Gemini"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/singletonmace/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "com.yourname.singletonmace.SingletonMace"
+    ],
+    "server_state_component": [
+      "com.yourname.singletonmace.MaceTrackerState"
+    ]
+  },
+  "mixins": [
+    "singletonmace.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "fabric-api": "*",
+    "minecraft": "1.21.5"
+  }
+}
